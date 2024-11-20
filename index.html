@@ -1,0 +1,156 @@
+import { useState } from 'react';
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  category: string;
+}
+
+const products: Product[] = [
+  { id: 1, name: 'Product 1', price: 10.99, description: 'This is product 1', category: 'General' },
+  { id: 2, name: 'Product 2', price: 9.99, description: 'This is product 2', category: 'General' },
+  { id: 3, name: 'Product 3', price: 12.99, description: 'This is product 3', category: 'General' },
+  { id: 4, name: 'Shirt', price: 19.99, description: 'This is a shirt', category: 'Wardrobe' },
+  { id: 5, name: 'Pants', price: 29.99, description: 'This is a pair of pants', category: 'Wardrobe' },
+  { id: 6, name: 'Dress', price: 39.99, description: 'This is a dress', category: 'Wardrobe' },
+  { id: 7, name: 'Shampoo', price: 8.99, description: 'This is a shampoo', category: 'Personal Care' },
+  { id: 8, name: 'Conditioner', price: 9.99, description: 'This is a conditioner', category: 'Personal Care' },
+  { id: 9, name: 'Toothpaste', price: 5.99, description: 'This is a toothpaste', category: 'Personal Care' },
+  { id: 10, name: 'Blender', price: 49.99, description: 'This is a blender', category: 'Kitchen Appliances' },
+  { id: 11, name: 'Coffee Maker', price: 69.99, description: 'This is a coffee maker', category: 'Kitchen Appliances' },
+  { id: 12, name: 'Toaster', price: 29.99, description: 'This is a toaster', category: 'Kitchen Appliances' },
+];
+
+const ECommerceSite = () => {
+  const [cart, setCart] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('General');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  const handleAddToCart = (product: Product) => {
+    setCart([...cart, product]);
+  };
+
+  const handleRemoveFromCart = (product: Product) => {
+    setCart(cart.filter((item) => item.id !== product.id));
+  };
+
+  const handleViewProduct = (product: Product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleSelectCategory = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  const handleSearch = () => {
+    setSelectedCategory('');
+  };
+
+  const filteredProducts = products.filter((product) => {
+    if (selectedCategory) {
+      return product.category === selectedCategory;
+    } else {
+      return product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+  });
+
+  return (
+    <div className="max-w-6xl mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-4">E-Commerce Site</h1>
+      <div className="flex justify-center mb-4">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search products"
+          className="w-full md:w-1/2 xl:w-1/3 p-2 pl-10 text-sm text-gray-700"
+        />
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={handleSearch}
+        >
+          Search
+        </button>
+      </div>
+      <div className="flex justify-center mb-4">
+        <button
+          className={`bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded mr-2 ${selectedCategory === 'General' ? 'bg-blue-500 text-white' : ''}`}
+          onClick={() => handleSelectCategory('General')}
+        >
+          General
+        </button>
+        <button
+          className={`bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded mr-2 ${selectedCategory === 'Wardrobe' ? 'bg-blue-500 text-white' : ''}`}
+          onClick={() => handleSelectCategory('Wardrobe')}
+        >
+          Wardrobe
+        </button>
+        <button
+          className={`bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded mr-2 ${selectedCategory === 'Personal Care' ? 'bg-blue-500 text-white' : ''}`}
+          onClick={() => handleSelectCategory('Personal Care')}
+        >
+          Personal Care
+        </button>
+        <button
+          className={`bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded ${selectedCategory === 'Kitchen Appliances' ? 'bg-blue-500 text-white' : ''}`}
+          onClick={() => handleSelectCategory('Kitchen Appliances')}
+        >
+          Kitchen Appliances
+        </button>
+      </div>
+      <div className="flex flex-wrap justify-center mb-4">
+        {filteredProducts.map((product) => (
+          <div key={product.id} className="w-full md:w-1/2 xl:w-1/3 p-4">
+            <div className="bg-white rounded shadow-md p-4">
+              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 mb-4" />
+              <h2 className="text-lg font-bold mb-2">{product.name}</h2>
+              <p className="text-gray-600 mb-2">{product.description}</p>
+              <p className="text-lg font-bold mb-4">${product.price}</p>
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onClick={() => handleAddToCart(product)}
+              >
+                Add to Cart
+              </button>
+              <button
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
+                onClick={() => handleViewProduct(product)}
+              >
+                View Product
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      {selectedProduct && (
+        <div className="bg-white rounded shadow-md p-4 mb-4">
+          <h2 className="text-lg font-bold mb-2">{selectedProduct.name}</h2>
+          <p className="text-gray-600 mb-2">{selectedProduct.description}</p>
+          <p className="text-lg font-bold mb-4">${selectedProduct.price}</p>
+        </div>
+      )}
+      <h2 className="text-2xl font-bold mb-4">Cart</h2>
+      <ul>
+        {cart.map((product) => (
+          <li key={product.id} className="mb-2">
+            {product.name} - ${product.price}
+            <button
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2"
+              onClick={() => handleRemoveFromCart(product)}
+            >
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p className="text-lg font-bold mb-4">
+        Total: ${cart.reduce((acc, product) => acc + product.price, 0)}
+      </p>
+    </div>
+  );
+};
+
+export default ECommerceSite;
